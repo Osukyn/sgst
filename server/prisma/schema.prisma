@@ -7,7 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      =  "postgresql://sgst_user:sgst_password@localhost:5432/sgst_db"
+
 }
 
 model Personne {
