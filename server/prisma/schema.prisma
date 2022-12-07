@@ -60,21 +60,23 @@ model Arme {
 }
 
 model AchatMunition {
-  id          Int      @id @default(autoincrement())
   quantite    Int
   numLicencie Int
   idMunition  Int
   munition    Munition @relation(fields: [idMunition], references: [id])
   licencie    Licencie @relation(fields: [numLicencie], references: [numLicencie])
+
+  @@id([numLicencie, idMunition])
 }
 
 model PossedeHabilitation {
-  id             Int          @id @default(autoincrement())
   dateObtention  DateTime     @db.Date
   numLicencie    Int
   idHabilitation Int
   habilitation   Habilitation @relation(fields: [idHabilitation], references: [id])
   licencie       Licencie     @relation(fields: [numLicencie], references: [numLicencie])
+
+  @@id([numLicencie, idHabilitation])
 }
 
 model Munition {
@@ -109,7 +111,7 @@ model Creneau {
 }
 
 model Pas {
-  num          Int           @id  @default(autoincrement())
+  num          Int           @id @default(autoincrement())
   idStand      Int
   stand        Stand         @relation(fields: [idStand], references: [id])
   reservations Reservation[]
