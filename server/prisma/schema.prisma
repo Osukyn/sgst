@@ -7,12 +7,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://sgst_user:sgst_password@localhost:5432/sgst_db"
 }
 
 model Personne {
-  id            Int           @id @default(autoincrement())
-  email         String        @unique
+  email         String        @id @unique
   prenom        String
   nom           String
   adresse       String
@@ -26,17 +25,17 @@ model Personne {
 }
 
 model Moniteur {
-  numAgrement  Int           @id @default(autoincrement())
-  personne     Personne      @relation(fields: [personneId], references: [id])
-  personneId   Int           @unique
-  reservations Reservation[]
+  numAgrement   Int           @id
+  personne      Personne      @relation(fields: [personneEmail], references: [email])
+  personneEmail String        @unique
+  reservations  Reservation[]
 }
 
 model Licencie {
-  numLicencie         Int                   @id @default(autoincrement())
+  numLicencie         Int                   @id
   annee               Int
-  personneId          Int                   @unique
-  personne            Personne              @relation(fields: [personneId], references: [id])
+  personneEmail       String                @unique
+  personne            Personne              @relation(fields: [personneEmail], references: [email])
   possedeHabilitation PossedeHabilitation[]
   acheteMunition      AchatMunition[]
   reservations        Reservation[]
@@ -50,8 +49,7 @@ model Habilitation {
 }
 
 model Arme {
-  id             Int           @id @default(autoincrement())
-  numSerie       Int           @unique
+  numSerie       Int           @id
   nom            String
   tarif          Decimal       @db.Money
   idHabilitation Int
@@ -62,21 +60,23 @@ model Arme {
 }
 
 model AchatMunition {
-  id          Int      @id @default(autoincrement())
   quantite    Int
   numLicencie Int
   idMunition  Int
   munition    Munition @relation(fields: [idMunition], references: [id])
   licencie    Licencie @relation(fields: [numLicencie], references: [numLicencie])
+
+  @@id([numLicencie, idMunition])
 }
 
 model PossedeHabilitation {
-  id             Int          @id @default(autoincrement())
   dateObtention  DateTime     @db.Date
   numLicencie    Int
   idHabilitation Int
   habilitation   Habilitation @relation(fields: [idHabilitation], references: [id])
   licencie       Licencie     @relation(fields: [numLicencie], references: [numLicencie])
+
+  @@id([numLicencie, idHabilitation])
 }
 
 model Munition {
@@ -88,31 +88,29 @@ model Munition {
 }
 
 model Reservation {
-  num          Int       @id @default(autoincrement())
-  date         DateTime  @db.Date
-  numLicencie  Int?
-  idPersonne   Int?
-  numAgrement  Int?
-  idArme       Int
-  idPas        Int
-  licencie     Licencie? @relation(fields: [numLicencie], references: [numLicencie])
-  personne     Personne? @relation(fields: [idPersonne], references: [id])
-  moniteur     Moniteur? @relation(fields: [numAgrement], references: [numAgrement])
-  arme         Arme      @relation(fields: [idArme], references: [id])
-  Creneau      Creneau?  @relation(fields: [creneauHeure], references: [heure])
-  creneauHeure DateTime? @db.Time(3)
-  Pas          Pas?      @relation(fields: [pasId], references: [id])
-  pasId        Int?
+  num           Int       @id @default(autoincrement())
+  date          DateTime  @db.Date
+  numLicencie   Int?
+  emailPersonne String?
+  numAgrement   Int?
+  numArme       Int
+  licencie      Licencie? @relation(fields: [numLicencie], references: [numLicencie])
+  personne      Personne? @relation(fields: [emailPersonne], references: [email])
+  moniteur      Moniteur? @relation(fields: [numAgrement], references: [numAgrement])
+  arme          Arme      @relation(fields: [numArme], references: [numSerie])
+  Creneau       Creneau?  @relation(fields: [creneauHeure], references: [heure])
+  creneauHeure  Int?
+  Pas           Pas?      @relation(fields: [pasId], references: [num])
+  pasId         Int?
 }
 
 model Creneau {
-  heure        DateTime      @id @db.Time(3)
+  heure        Int           @id
   reservations Reservation[]
 }
 
 model Pas {
-  id           Int           @id @default(autoincrement())
-  num          Int
+  num          Int           @id @default(autoincrement())
   idStand      Int
   stand        Stand         @relation(fields: [idStand], references: [id])
   reservations Reservation[]
