@@ -53,6 +53,7 @@ router.get("/possedeHabilitation", possedeHabilitation.findAll);
 
 router.get("/reservation/:id", reservation.findOne);
 router.get("/reservation", reservation.findAll);
+router.post("/reservation", reservation.create);
 
 export default router;
 

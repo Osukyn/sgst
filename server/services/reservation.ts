@@ -13,3 +13,8 @@ export const findOne = (num: number): Promise<Reservation> =>
     },
   });
 
+export const create = (resa: any): Promise<Reservation> =>
+  reservationModel.create({
+    data: resa
+  });
+
