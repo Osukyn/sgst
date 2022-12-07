@@ -94,7 +94,6 @@ model Reservation {
   emailPersonne String?
   numAgrement   Int?
   numArme       Int
-  idPas         Int
   licencie      Licencie? @relation(fields: [numLicencie], references: [numLicencie])
   personne      Personne? @relation(fields: [emailPersonne], references: [email])
   moniteur      Moniteur? @relation(fields: [numAgrement], references: [numAgrement])
