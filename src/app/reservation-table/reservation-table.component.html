@@ -1,0 +1,41 @@
+<tui-loader
+  class="inline-flex tui-space_right-2"
+  [showLoader]="loading"
+  [inheritColor]="true"
+  [overlay]="true"
+>
+  <table
+    tuiTable
+    [columns]="columns"
+  >
+    <thead>
+    <tr tuiThGroup>
+      <th tuiTh>Nom</th>
+      <th tuiTh>Prénom</th>
+      <th tuiTh>Date</th>
+      <th tuiTh>Heure</th>
+      <th tuiTh>Durée</th>
+      <th tuiTh>Stand</th>
+      <th tuiTh>Pas</th>
+      <th tuiTh>Type</th>
+      <th tuiTh>Moniteur</th>
+    </tr>
+    </thead>
+    <tbody
+      tuiTbody
+      [data]="data"
+    >
+    <tr
+      *ngFor="let item of data"
+      tuiTr
+    >
+      <td
+        *tuiCell="'date'"
+        tuiTd
+      >
+        {{ item.date | date }}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</tui-loader>
