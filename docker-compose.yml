@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: sgst_db
     volumes:
       - ./pg-data:/var/lib/postgresql/data
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
     restart: always
 
     ports:

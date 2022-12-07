@@ -1,0 +1,33 @@
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 3em">
+  <form
+    *tuiLet="items$ | async as items"
+    class="b-form"
+    [tuiTextfieldCleaner]="true"
+  >
+    <tui-combo-box
+      [formControl]="testValue"
+      [valueContent]="content"
+    >
+      Choix du licencié
+      <input
+        tuiTextfield
+        placeholder="Ecris un nom"
+        (input)="onSearchChange(extractValueFromEvent($event))"
+      />
+      <tui-data-list-wrapper
+        *tuiDataList
+        [items]="items"
+        [itemContent]="content"
+      ></tui-data-list-wrapper>
+    </tui-combo-box>
+  </form>
+
+  <ng-template
+    #content
+    let-data
+  >
+    <div class="template">
+      <div class="name">{{ data }}</div>
+    </div>
+  </ng-template>
+</div>
