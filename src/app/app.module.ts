@@ -14,11 +14,11 @@ import {RouterModule, Routes} from "@angular/router";
 import { MenuComponent } from './menu/menu.component';
 import { ReservationTableComponent } from './reservation-table/reservation-table.component';
 import {
-  TuiCheckboxModule, TuiComboBoxModule,
-  TuiDataListWrapperModule,
-  TuiInputModule,
-  TuiSelectModule,
-  TuiTagModule
+    TuiCheckboxModule, TuiComboBoxModule,
+    TuiDataListWrapperModule, TuiInputDateModule,
+    TuiInputModule, TuiInputNumberModule, TuiInputTimeModule,
+    TuiSelectModule,
+    TuiTagModule
 } from "@taiga-ui/kit";
 import {ReactiveFormsModule} from "@angular/forms";
 import {TuiTableModule} from "@taiga-ui/addon-table";
@@ -43,30 +43,33 @@ const appRoutes: Routes = [
     ReservationsPageComponent,
     AddReservationComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    TuiRootModule,
-    TuiThemeNightModule,
-    TuiModeModule,
-    RouterModule.forRoot(appRoutes),
-    TuiCheckboxModule,
-    ReactiveFormsModule,
-    TuiTableModule,
-    TuiFormatNumberPipeModule,
-    TuiButtonModule,
-    TuiTagModule,
-    TuiLetModule,
-    TuiLinkModule,
-    TuiLoaderModule,
-    TuiSelectModule,
-    TuiDataListModule,
-    TuiInputModule,
-    TuiTextfieldControllerModule,
-    TuiDataListWrapperModule,
-    TuiComboBoxModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        TuiRootModule,
+        TuiThemeNightModule,
+        TuiModeModule,
+        RouterModule.forRoot(appRoutes),
+        TuiCheckboxModule,
+        ReactiveFormsModule,
+        TuiTableModule,
+        TuiFormatNumberPipeModule,
+        TuiButtonModule,
+        TuiTagModule,
+        TuiLetModule,
+        TuiLinkModule,
+        TuiLoaderModule,
+        TuiSelectModule,
+        TuiDataListModule,
+        TuiInputModule,
+        TuiTextfieldControllerModule,
+        TuiDataListWrapperModule,
+        TuiComboBoxModule,
+        HttpClientModule,
+        TuiInputDateModule,
+        TuiInputTimeModule,
+        TuiInputNumberModule
+    ],
   providers: [
     {
       provide: TUI_LANGUAGE,

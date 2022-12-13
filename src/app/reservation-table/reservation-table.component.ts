@@ -5,7 +5,7 @@ import {ReservationService} from "../services/reservation.service";
 @Component({
   selector: 'app-reservation-table',
   templateUrl: './reservation-table.component.html',
-  styleUrls: ['./reservation-table.component.scss'],
+  styleUrls: ['./reservation-table.component.scss', './table.less'],
 })
 export class ReservationTableComponent implements OnInit {
   data: Reservation[] = [];

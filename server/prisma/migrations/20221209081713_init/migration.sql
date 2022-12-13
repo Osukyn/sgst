@@ -1,6 +1,5 @@
 -- CreateTable
 CREATE TABLE "Personne" (
-    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "prenom" TEXT NOT NULL,
     "nom" TEXT NOT NULL,
@@ -10,22 +9,22 @@ CREATE TABLE "Personne" (
     "telephone" VARCHAR(10) NOT NULL,
     "dateNaissance" DATE NOT NULL,
 
-    CONSTRAINT "Personne_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Personne_pkey" PRIMARY KEY ("email")
 );
 
 -- CreateTable
 CREATE TABLE "Moniteur" (
-    "numAgrement" SERIAL NOT NULL,
-    "personneId" INTEGER NOT NULL,
+    "numAgrement" INTEGER NOT NULL,
+    "personneEmail" TEXT NOT NULL,
 
     CONSTRAINT "Moniteur_pkey" PRIMARY KEY ("numAgrement")
 );
 
 -- CreateTable
 CREATE TABLE "Licencie" (
-    "numLicencie" SERIAL NOT NULL,
+    "numLicencie" INTEGER NOT NULL,
     "annee" INTEGER NOT NULL,
-    "personneId" INTEGER NOT NULL,
+    "personneEmail" TEXT NOT NULL,
 
     CONSTRAINT "Licencie_pkey" PRIMARY KEY ("numLicencie")
 );
@@ -40,34 +39,31 @@ CREATE TABLE "Habilitation" (
 
 -- CreateTable
 CREATE TABLE "Arme" (
-    "id" SERIAL NOT NULL,
     "numSerie" INTEGER NOT NULL,
     "nom" TEXT NOT NULL,
     "tarif" MONEY NOT NULL,
     "idHabilitation" INTEGER NOT NULL,
     "idMunition" INTEGER NOT NULL,
 
-    CONSTRAINT "Arme_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Arme_pkey" PRIMARY KEY ("numSerie")
 );
 
 -- CreateTable
 CREATE TABLE "AchatMunition" (
-    "id" SERIAL NOT NULL,
     "quantite" INTEGER NOT NULL,
     "numLicencie" INTEGER NOT NULL,
     "idMunition" INTEGER NOT NULL,
 
-    CONSTRAINT "AchatMunition_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AchatMunition_pkey" PRIMARY KEY ("numLicencie","idMunition")
 );
 
 -- CreateTable
 CREATE TABLE "PossedeHabilitation" (
-    "id" SERIAL NOT NULL,
     "dateObtention" DATE NOT NULL,
     "numLicencie" INTEGER NOT NULL,
     "idHabilitation" INTEGER NOT NULL,
 
-    CONSTRAINT "PossedeHabilitation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PossedeHabilitation_pkey" PRIMARY KEY ("numLicencie","idHabilitation")
 );
 
 -- CreateTable
@@ -84,11 +80,10 @@ CREATE TABLE "Reservation" (
     "num" SERIAL NOT NULL,
     "date" DATE NOT NULL,
     "numLicencie" INTEGER,
-    "idPersonne" INTEGER,
+    "emailPersonne" TEXT,
     "numAgrement" INTEGER,
-    "idArme" INTEGER NOT NULL,
-    "idPas" INTEGER NOT NULL,
-    "creneauHeure" TIME(3),
+    "numArme" INTEGER NOT NULL,
+    "creneauHeure" INTEGER,
     "pasId" INTEGER,
 
     CONSTRAINT "Reservation_pkey" PRIMARY KEY ("num")
@@ -96,18 +91,17 @@ CREATE TABLE "Reservation" (
 
 -- CreateTable
 CREATE TABLE "Creneau" (
-    "heure" TIME(3) NOT NULL,
+    "heure" INTEGER NOT NULL,
 
     CONSTRAINT "Creneau_pkey" PRIMARY KEY ("heure")
 );
 
 -- CreateTable
 CREATE TABLE "Pas" (
-    "id" SERIAL NOT NULL,
-    "num" INTEGER NOT NULL,
+    "num" SERIAL NOT NULL,
     "idStand" INTEGER NOT NULL,
 
-    CONSTRAINT "Pas_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Pas_pkey" PRIMARY KEY ("num")
 );
 
 -- CreateTable
@@ -122,19 +116,16 @@ CREATE TABLE "Stand" (
 CREATE UNIQUE INDEX "Personne_email_key" ON "Personne"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Moniteur_personneId_key" ON "Moniteur"("personneId");
+CREATE UNIQUE INDEX "Moniteur_personneEmail_key" ON "Moniteur"("personneEmail");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Licencie_personneId_key" ON "Licencie"("personneId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Arme_numSerie_key" ON "Arme"("numSerie");
+CREATE UNIQUE INDEX "Licencie_personneEmail_key" ON "Licencie"("personneEmail");
 
 -- AddForeignKey
-ALTER TABLE "Moniteur" ADD CONSTRAINT "Moniteur_personneId_fkey" FOREIGN KEY ("personneId") REFERENCES "Personne"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Moniteur" ADD CONSTRAINT "Moniteur_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Licencie" ADD CONSTRAINT "Licencie_personneId_fkey" FOREIGN KEY ("personneId") REFERENCES "Personne"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Licencie" ADD CONSTRAINT "Licencie_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Arme" ADD CONSTRAINT "Arme_idHabilitation_fkey" FOREIGN KEY ("idHabilitation") REFERENCES "Habilitation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -158,19 +149,19 @@ ALTER TABLE "PossedeHabilitation" ADD CONSTRAINT "PossedeHabilitation_numLicenci
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numLicencie_fkey" FOREIGN KEY ("numLicencie") REFERENCES "Licencie"("numLicencie") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_idPersonne_fkey" FOREIGN KEY ("idPersonne") REFERENCES "Personne"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_emailPersonne_fkey" FOREIGN KEY ("emailPersonne") REFERENCES "Personne"("email") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numAgrement_fkey" FOREIGN KEY ("numAgrement") REFERENCES "Moniteur"("numAgrement") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_idArme_fkey" FOREIGN KEY ("idArme") REFERENCES "Arme"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numArme_fkey" FOREIGN KEY ("numArme") REFERENCES "Arme"("numSerie") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_creneauHeure_fkey" FOREIGN KEY ("creneauHeure") REFERENCES "Creneau"("heure") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_pasId_fkey" FOREIGN KEY ("pasId") REFERENCES "Pas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_pasId_fkey" FOREIGN KEY ("pasId") REFERENCES "Pas"("num") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Pas" ADD CONSTRAINT "Pas_idStand_fkey" FOREIGN KEY ("idStand") REFERENCES "Stand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

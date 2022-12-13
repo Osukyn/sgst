@@ -11,3 +11,14 @@ export class Reservation {
               readonly arme: string) {
   }
 }
+
+export class PersistReservation {
+  constructor(readonly date: Date,
+              readonly numLicencie: number,
+              readonly emailPersonne: string | null,
+              readonly numAgrement: number | null,
+              readonly numArme: number,
+              readonly creneauHeure: number,
+              readonly pasId: number) {
+  }
+}

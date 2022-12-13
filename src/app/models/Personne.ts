@@ -3,7 +3,7 @@ export class Personne {
   }
 
   toString(): string {
-    return `${this.nom} ${this.prenom} ${this.email}`
+    return `${this.prenom} ${this.nom.toUpperCase()} ${this.email}`
   }
 }
 

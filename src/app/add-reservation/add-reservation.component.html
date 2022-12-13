@@ -1,26 +1,155 @@
-<div style="display: flex; flex-direction: column; align-items: center; margin-top: 3em">
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 3em; width: 30em">
+  <h1 class="tui-text_h3 tui-space_bottom-5">
+    Nouvelle réservation
+  </h1>
   <form
-    *tuiLet="items$ | async as items"
+    style="width: 100%;"
     class="b-form"
-    [tuiTextfieldCleaner]="true"
+    [formGroup]="formGroup"
   >
-    <tui-combo-box
-      [formControl]="testValue"
-      [valueContent]="content"
+    <div [tuiTextfieldCleaner]="true"
+         *tuiLet="items$ | async as items">
+      <tui-combo-box
+        class="tui-space_top-5"
+        formControlName="testValue"
+        [valueContent]="content"
+      >
+        Choix du licencié
+        <input
+          tuiTextfield
+          placeholder="Ecris un nom"
+          (input)="onSearchChange(extractValueFromEvent($event))"
+        />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="items"
+          [itemContent]="content"
+        ></tui-data-list-wrapper>
+      </tui-combo-box>
+    </div>
+
+    <div class="tui-space_top-5"
+         style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;">
+      <tui-input-date
+        style="width: 30em; margin-right: 1em"
+        formControlName="dateResValue"
+        tuiTextfieldSize="l"
+        [min]="minDate"
+      >
+        Choisis une date
+      </tui-input-date>
+      <tui-input-time *ngIf="creneauxLoaded"
+                      formControlName="timeValue"
+                      [items]="items2"
+                      [strict]="true"
+
+      >
+        Entre l'heure
+      </tui-input-time>
+    </div>
+    <tui-select
+      formControlName="armeValue"
+      class="tui-space_top-5"
+      [valueContent]="armesContent"
     >
-      Choix du licencié
+      Arme
       <input
         tuiTextfield
-        placeholder="Ecris un nom"
-        (input)="onSearchChange(extractValueFromEvent($event))"
+        placeholder="Choisis l'arme"
       />
       <tui-data-list-wrapper
         *tuiDataList
-        [items]="items"
-        [itemContent]="content"
+        [items]="armeList"
+        [itemContent]="armesContent"
       ></tui-data-list-wrapper>
-    </tui-combo-box>
+    </tui-select>
+
+    <div class="tui-space_top-5"
+         style="display: flex; flex-direction: row; width: 100%; justify-content: space-between">
+      <tui-select
+        formControlName="standValue"
+        [valueContent]="standsContent"
+        style="width: 100%"
+        class="tui-space_right-2"
+      >
+        Stand
+        <input
+          tuiTextfield
+          placeholder="Choisis le stand"
+        />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="standList"
+          [itemContent]="standsContent"
+        ></tui-data-list-wrapper>
+      </tui-select>
+
+      <tui-select
+        formControlName="pasValue"
+        [valueContent]="pasContent"
+        style="width: 100%"
+        class="tui-space_left-2"
+      >
+        Pas de tir
+        <input
+          tuiTextfield
+          placeholder="Choisis le pas de tir"
+        />
+        <tui-data-list-wrapper
+          *tuiDataList
+          [items]="pasList"
+          [itemContent]="pasContent"
+        ></tui-data-list-wrapper>
+      </tui-select>
+    </div>
   </form>
+
+  <div class="tui-space_top-5" style="display: flex; flex-direction: row; width: 100%; justify-content: center">
+    <button
+      tuiButton
+      type="button"
+      appearance="secondary-destructive"
+      class="tui-space_right-3"
+      (click)="clearForm()"
+    >
+      Effacer
+    </button>
+
+    <button
+      tuiButton
+      type="button"
+      appearance="primary"
+      class="tui-space_left-3"
+      [disabled]="formGroup.invalid"
+      (click)="createReservation()"
+    >
+      Valider
+    </button>
+  </div>
+
+  <span *ngIf="responded" style="color: limegreen">{{ returnedMessage }}</span>
+  <span *ngIf="returnedError" style="color: orangered">{{ returnedMessage }}</span>
+
+  <ng-template
+    #armesContent
+    let-arme
+  >
+    <span>{{ arme.nom }}</span>
+  </ng-template>
+
+  <ng-template
+    #standsContent
+    let-stand
+  >
+    <span>{{ stand.id }} | {{ stand.distance }}m</span>
+  </ng-template>
+
+  <ng-template
+    #pasContent
+    let-pas
+  >
+    <span>{{ pas.num }}</span>
+  </ng-template>
 
   <ng-template
     #content

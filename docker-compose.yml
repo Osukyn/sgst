@@ -9,7 +9,6 @@ services:
       POSTGRES_DB: sgst_db
     volumes:
       - ./pg-data:/var/lib/postgresql/data
-      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
     restart: always
 
     ports:
@@ -20,5 +19,27 @@ services:
       timeout: 5s
       retries: 10
 
+  node:
+    image: node
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./server:/app
+    working_dir: /app
+    command: npm start
+    ports:
+      - "3000:3000"
+
+  web:
+    image: nginx
+    depends_on:
+      - node
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+
 volumes:
   pg-data:
+

@@ -8,7 +8,7 @@ export const findAll = async (req: Request, res: Response) => {
 
 export const findOne = async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params["id"]);
     const stand = await standService.findOne(id);
     res.send(stand);
   } catch (e) {

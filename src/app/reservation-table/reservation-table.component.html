@@ -1,5 +1,5 @@
 <tui-loader
-  class="inline-flex tui-space_right-2"
+  class="inline-flex"
   [showLoader]="loading"
   [inheritColor]="true"
   [overlay]="true"
@@ -30,10 +30,58 @@
       tuiTr
     >
       <td
+        *tuiCell="'nom'"
+        tuiTd
+      >
+        {{ item.nom }}
+      </td>
+      <td
+        *tuiCell="'prenom'"
+        tuiTd
+      >
+        {{ item.prenom }}
+      </td>
+      <td
         *tuiCell="'date'"
         tuiTd
       >
         {{ item.date | date }}
+      </td>
+      <td
+        *tuiCell="'heure'"
+        tuiTd
+      >
+        {{ item.heure }}H
+      </td>
+      <td
+        *tuiCell="'stand'"
+        tuiTd
+      >
+        {{ item.stand }}m
+      </td>
+      <td
+        *tuiCell="'pas'"
+        tuiTd
+      >
+        {{ item.pas }}
+      </td>
+      <td
+        *tuiCell="'type'"
+        tuiTd
+      >
+        {{ item.type }}
+      </td>
+      <td
+        *tuiCell="'moniteur'"
+        tuiTd
+      >
+        {{ item.moniteur }}
+      </td>
+      <td
+        *tuiCell="'arme'"
+        tuiTd
+      >
+        {{ item.arme }}
       </td>
     </tr>
     </tbody>

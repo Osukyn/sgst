@@ -1,6 +1,5 @@
 -- CreateTable
 CREATE TABLE "Personne" (
-    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "prenom" TEXT NOT NULL,
     "nom" TEXT NOT NULL,
@@ -10,22 +9,22 @@ CREATE TABLE "Personne" (
     "telephone" VARCHAR(10) NOT NULL,
     "dateNaissance" DATE NOT NULL,
 
-    CONSTRAINT "Personne_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Personne_pkey" PRIMARY KEY ("email")
 );
 
 -- CreateTable
 CREATE TABLE "Moniteur" (
-    "numAgrement" SERIAL NOT NULL,
-    "personneId" INTEGER NOT NULL,
+    "numAgrement" INTEGER NOT NULL,
+    "personneEmail" TEXT NOT NULL,
 
     CONSTRAINT "Moniteur_pkey" PRIMARY KEY ("numAgrement")
 );
 
 -- CreateTable
 CREATE TABLE "Licencie" (
-    "numLicencie" SERIAL NOT NULL,
+    "numLicencie" INTEGER NOT NULL,
     "annee" INTEGER NOT NULL,
-    "personneId" INTEGER NOT NULL,
+    "personneEmail" TEXT NOT NULL,
 
     CONSTRAINT "Licencie_pkey" PRIMARY KEY ("numLicencie")
 );
@@ -40,34 +39,31 @@ CREATE TABLE "Habilitation" (
 
 -- CreateTable
 CREATE TABLE "Arme" (
-    "id" SERIAL NOT NULL,
     "numSerie" INTEGER NOT NULL,
     "nom" TEXT NOT NULL,
     "tarif" MONEY NOT NULL,
     "idHabilitation" INTEGER NOT NULL,
     "idMunition" INTEGER NOT NULL,
 
-    CONSTRAINT "Arme_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Arme_pkey" PRIMARY KEY ("numSerie")
 );
 
 -- CreateTable
 CREATE TABLE "AchatMunition" (
-    "id" SERIAL NOT NULL,
     "quantite" INTEGER NOT NULL,
     "numLicencie" INTEGER NOT NULL,
     "idMunition" INTEGER NOT NULL,
 
-    CONSTRAINT "AchatMunition_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AchatMunition_pkey" PRIMARY KEY ("numLicencie","idMunition")
 );
 
 -- CreateTable
 CREATE TABLE "PossedeHabilitation" (
-    "id" SERIAL NOT NULL,
     "dateObtention" DATE NOT NULL,
     "numLicencie" INTEGER NOT NULL,
     "idHabilitation" INTEGER NOT NULL,
 
-    CONSTRAINT "PossedeHabilitation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PossedeHabilitation_pkey" PRIMARY KEY ("numLicencie","idHabilitation")
 );
 
 -- CreateTable
@@ -84,11 +80,10 @@ CREATE TABLE "Reservation" (
     "num" SERIAL NOT NULL,
     "date" DATE NOT NULL,
     "numLicencie" INTEGER,
-    "idPersonne" INTEGER,
+    "emailPersonne" TEXT,
     "numAgrement" INTEGER,
-    "idArme" INTEGER NOT NULL,
-    "idPas" INTEGER NOT NULL,
-    "creneauHeure" TIME(3),
+    "numArme" INTEGER NOT NULL,
+    "creneauHeure" INTEGER,
     "pasId" INTEGER,
 
     CONSTRAINT "Reservation_pkey" PRIMARY KEY ("num")
@@ -96,18 +91,17 @@ CREATE TABLE "Reservation" (
 
 -- CreateTable
 CREATE TABLE "Creneau" (
-    "heure" TIME(3) NOT NULL,
+    "heure" INTEGER NOT NULL,
 
     CONSTRAINT "Creneau_pkey" PRIMARY KEY ("heure")
 );
 
 -- CreateTable
 CREATE TABLE "Pas" (
-    "id" SERIAL NOT NULL,
-    "num" INTEGER NOT NULL,
+    "num" SERIAL NOT NULL,
     "idStand" INTEGER NOT NULL,
 
-    CONSTRAINT "Pas_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Pas_pkey" PRIMARY KEY ("num")
 );
 
 -- CreateTable
@@ -122,19 +116,16 @@ CREATE TABLE "Stand" (
 CREATE UNIQUE INDEX "Personne_email_key" ON "Personne"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Moniteur_personneId_key" ON "Moniteur"("personneId");
+CREATE UNIQUE INDEX "Moniteur_personneEmail_key" ON "Moniteur"("personneEmail");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Licencie_personneId_key" ON "Licencie"("personneId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Arme_numSerie_key" ON "Arme"("numSerie");
+CREATE UNIQUE INDEX "Licencie_personneEmail_key" ON "Licencie"("personneEmail");
 
 -- AddForeignKey
-ALTER TABLE "Moniteur" ADD CONSTRAINT "Moniteur_personneId_fkey" FOREIGN KEY ("personneId") REFERENCES "Personne"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Moniteur" ADD CONSTRAINT "Moniteur_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Licencie" ADD CONSTRAINT "Licencie_personneId_fkey" FOREIGN KEY ("personneId") REFERENCES "Personne"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Licencie" ADD CONSTRAINT "Licencie_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Arme" ADD CONSTRAINT "Arme_idHabilitation_fkey" FOREIGN KEY ("idHabilitation") REFERENCES "Habilitation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -158,131 +149,10 @@ ALTER TABLE "PossedeHabilitation" ADD CONSTRAINT "PossedeHabilitation_numLicenci
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numLicencie_fkey" FOREIGN KEY ("numLicencie") REFERENCES "Licencie"("numLicencie") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_idPersonne_fkey" FOREIGN KEY ("idPersonne") REFERENCES "Personne"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_emailPersonne_fkey" FOREIGN KEY ("emailPersonne") REFERENCES "Personne"("email") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numAgrement_fkey" FOREIGN KEY ("numAgrement") REFERENCES "Moniteur"("numAgrement") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_idArme_fkey" FOREIGN KEY ("idArme") REFERENCES "Arme"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_creneauHeure_fkey" FOREIGN KEY ("creneauHeure") REFERENCES "Creneau"("heure") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_pasId_fkey" FOREIGN KEY ("pasId") REFERENCES "Pas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Pas" ADD CONSTRAINT "Pas_idStand_fkey" FOREIGN KEY ("idStand") REFERENCES "Stand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
-/*
-  Warnings:
-
-  - The primary key for the `Arme` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `id` on the `Arme` table. All the data in the column will be lost.
-  - The primary key for the `Creneau` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `personneId` on the `Licencie` table. All the data in the column will be lost.
-  - You are about to drop the column `personneId` on the `Moniteur` table. All the data in the column will be lost.
-  - The primary key for the `Pas` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `id` on the `Pas` table. All the data in the column will be lost.
-  - The primary key for the `Personne` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `id` on the `Personne` table. All the data in the column will be lost.
-  - You are about to drop the column `idArme` on the `Reservation` table. All the data in the column will be lost.
-  - You are about to drop the column `idPersonne` on the `Reservation` table. All the data in the column will be lost.
-  - The `creneauHeure` column on the `Reservation` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - A unique constraint covering the columns `[personneEmail]` on the table `Licencie` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[personneEmail]` on the table `Moniteur` will be added. If there are existing duplicate values, this will fail.
-  - Changed the type of `heure` on the `Creneau` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
-  - Added the required column `personneEmail` to the `Licencie` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `personneEmail` to the `Moniteur` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `numArme` to the `Reservation` table without a default value. This is not possible if the table is not empty.
-
-*/
--- DropForeignKey
-ALTER TABLE "Licencie" DROP CONSTRAINT "Licencie_personneId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Moniteur" DROP CONSTRAINT "Moniteur_personneId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Reservation" DROP CONSTRAINT "Reservation_creneauHeure_fkey";
-
--- DropForeignKey
-ALTER TABLE "Reservation" DROP CONSTRAINT "Reservation_idArme_fkey";
-
--- DropForeignKey
-ALTER TABLE "Reservation" DROP CONSTRAINT "Reservation_idPersonne_fkey";
-
--- DropForeignKey
-ALTER TABLE "Reservation" DROP CONSTRAINT "Reservation_pasId_fkey";
-
--- DropIndex
-DROP INDEX "Arme_numSerie_key";
-
--- DropIndex
-DROP INDEX "Licencie_personneId_key";
-
--- DropIndex
-DROP INDEX "Moniteur_personneId_key";
-
--- AlterTable
-ALTER TABLE "Arme" DROP CONSTRAINT "Arme_pkey",
-DROP COLUMN "id",
-ADD CONSTRAINT "Arme_pkey" PRIMARY KEY ("numSerie");
-
--- AlterTable
-ALTER TABLE "Creneau" DROP CONSTRAINT "Creneau_pkey",
-DROP COLUMN "heure",
-ADD COLUMN     "heure" INTEGER NOT NULL,
-ADD CONSTRAINT "Creneau_pkey" PRIMARY KEY ("heure");
-
--- AlterTable
-ALTER TABLE "Licencie" DROP COLUMN "personneId",
-ADD COLUMN     "personneEmail" TEXT NOT NULL,
-ALTER COLUMN "numLicencie" DROP DEFAULT;
-DROP SEQUENCE "Licencie_numLicencie_seq";
-
--- AlterTable
-ALTER TABLE "Moniteur" DROP COLUMN "personneId",
-ADD COLUMN     "personneEmail" TEXT NOT NULL,
-ALTER COLUMN "numAgrement" DROP DEFAULT;
-DROP SEQUENCE "Moniteur_numAgrement_seq";
-
--- AlterTable
-CREATE SEQUENCE pas_num_seq;
-ALTER TABLE "Pas" DROP CONSTRAINT "Pas_pkey",
-DROP COLUMN "id",
-ALTER COLUMN "num" SET DEFAULT nextval('pas_num_seq'),
-ADD CONSTRAINT "Pas_pkey" PRIMARY KEY ("num");
-ALTER SEQUENCE pas_num_seq OWNED BY "Pas"."num";
-
--- AlterTable
-ALTER TABLE "Personne" DROP CONSTRAINT "Personne_pkey",
-DROP COLUMN "id",
-ADD CONSTRAINT "Personne_pkey" PRIMARY KEY ("email");
-
--- AlterTable
-ALTER TABLE "Reservation" DROP COLUMN "idArme",
-DROP COLUMN "idPersonne",
-ADD COLUMN     "emailPersonne" TEXT,
-ADD COLUMN     "numArme" INTEGER NOT NULL,
-DROP COLUMN "creneauHeure",
-ADD COLUMN     "creneauHeure" INTEGER;
-
--- CreateIndex
-CREATE UNIQUE INDEX "Licencie_personneEmail_key" ON "Licencie"("personneEmail");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Moniteur_personneEmail_key" ON "Moniteur"("personneEmail");
-
--- AddForeignKey
-ALTER TABLE "Moniteur" ADD CONSTRAINT "Moniteur_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Licencie" ADD CONSTRAINT "Licencie_personneEmail_fkey" FOREIGN KEY ("personneEmail") REFERENCES "Personne"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_emailPersonne_fkey" FOREIGN KEY ("emailPersonne") REFERENCES "Personne"("email") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_numArme_fkey" FOREIGN KEY ("numArme") REFERENCES "Arme"("numSerie") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -293,34 +163,110 @@ ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_creneauHeure_fkey" FOREIGN
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_pasId_fkey" FOREIGN KEY ("pasId") REFERENCES "Pas"("num") ON DELETE SET NULL ON UPDATE CASCADE;
 
-/*
-  Warnings:
+-- AddForeignKey
+ALTER TABLE "Pas" ADD CONSTRAINT "Pas_idStand_fkey" FOREIGN KEY ("idStand") REFERENCES "Stand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
-  - The primary key for the `AchatMunition` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `id` on the `AchatMunition` table. All the data in the column will be lost.
-  - The primary key for the `PossedeHabilitation` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `id` on the `PossedeHabilitation` table. All the data in the column will be lost.
+CREATE OR REPLACE FUNCTION verifier_reservation()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Si la réservation contient un licencié
+    IF NEW."numLicencie" IS NOT NULL THEN
+        -- S'assurer que personneEmail et numAgrement sont NULL
+        IF NEW."emailPersonne" IS NOT NULL OR NEW."numAgrement" IS NOT NULL THEN
+            RAISE EXCEPTION 'Une réservation ne peut contenir un licencié et une personne + un moniteur en même temps.';
+        END IF;
+    ELSE
+        -- S'assurer que personneEmail et numAgrement ne sont pas NULL
+        IF NEW."emailPersonne" IS NULL OR NEW."numAgrement" IS NULL THEN
+            RAISE EXCEPTION 'Une réservation doit contenir un licencié ou une personne + un moniteur.';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-*/
--- AlterTable
-ALTER TABLE "AchatMunition" DROP CONSTRAINT "AchatMunition_pkey",
-DROP COLUMN "id",
-ADD CONSTRAINT "AchatMunition_pkey" PRIMARY KEY ("numLicencie", "idMunition");
+CREATE TRIGGER verifier_reservation
+BEFORE INSERT OR UPDATE ON "Reservation"
+FOR EACH ROW EXECUTE PROCEDURE verifier_reservation();
 
--- AlterTable
-ALTER TABLE "PossedeHabilitation" DROP CONSTRAINT "PossedeHabilitation_pkey",
-DROP COLUMN "id",
-ADD CONSTRAINT "PossedeHabilitation_pkey" PRIMARY KEY ("numLicencie", "idHabilitation");
+CREATE OR REPLACE FUNCTION verifier_location()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Vérifier s'il y a déjà une réservation pour cet arme, ce jour et ce créneau
+    IF EXISTS (SELECT * FROM "Reservation"
+               WHERE "numArme" = NEW."numArme"
+               AND date = NEW.date
+               AND "creneauHeure" = NEW."creneauHeure"
+               AND num <> new.num) THEN
+        RAISE EXCEPTION 'Il n''est pas possible de louer la même arme plus d''une fois par créneau horaire.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-/*
-  Warnings:
+CREATE TRIGGER verifier_location
+BEFORE INSERT OR UPDATE ON "Reservation"
+FOR EACH ROW EXECUTE PROCEDURE verifier_location();
 
-  - You are about to drop the column `idPas` on the `Reservation` table. All the data in the column will be lost.
+CREATE OR REPLACE FUNCTION verifier_initiation()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Vérifier si l'email de la personne a déjà fait deux initiations cette année
+    IF (SELECT COUNT(*) FROM "Reservation"
+        WHERE "emailPersonne" = NEW."emailPersonne"
+        AND "numLicencie" IS NULL
+        AND "numAgrement" IS NOT NULL
+        AND date >= date_trunc('year', NOW())) >= 2 THEN
+        RAISE EXCEPTION 'Un visiteur ne peut faire que deux initiations maximum par an.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-*/
--- AlterTable
-ALTER TABLE "Reservation" DROP COLUMN "idPas";
+CREATE TRIGGER verifier_initiation
+BEFORE INSERT OR UPDATE ON "Reservation"
+FOR EACH ROW EXECUTE PROCEDURE verifier_initiation();
 
+CREATE OR REPLACE FUNCTION verifier_pas()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Vérifier s'il y a déjà une réservation pour ce pas, ce jour et ce créneau
+    IF EXISTS (SELECT * FROM "Reservation"
+               WHERE "pasId" = NEW."pasId"
+               AND date = NEW.date
+               AND "creneauHeure" = NEW."creneauHeure"
+               AND num <> NEW.num) THEN
+        RAISE EXCEPTION 'Un pas ne peut pas être occupé plus d''une fois par jour et par créneau horaire.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER verifier_pas
+BEFORE INSERT OR UPDATE ON "Reservation"
+FOR EACH ROW EXECUTE PROCEDURE verifier_pas();
+
+CREATE OR REPLACE FUNCTION verifier_moniteur()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Si la réservation est une initiation
+    IF NEW."numAgrement" IS NOT NULL THEN
+        -- Vérifier s'il y a déjà une réservation pour ce moniteur, ce jour et ce créneau
+        IF EXISTS (SELECT * FROM "Reservation"
+                   WHERE "numAgrement" = NEW."numAgrement"
+                   AND date = NEW.date
+                   AND "creneauHeure" = NEW."creneauHeure"
+                   AND num <> NEW.num) THEN
+            RAISE EXCEPTION 'Un moniteur ne peut pas être assigné à plusieurs initiations à la même date et au même créneau horaire.';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER verifier_moniteur
+BEFORE INSERT OR UPDATE ON "Reservation"
+FOR EACH ROW EXECUTE PROCEDURE verifier_moniteur();
 
 insert into "Creneau" (heure)
 values (8),

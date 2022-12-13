@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
+    "start": "npx prisma generate && nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "start npx prisma generate --watch & start nodemon & npx prisma studio"
   },

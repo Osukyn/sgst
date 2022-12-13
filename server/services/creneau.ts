@@ -12,4 +12,3 @@ export const findOne = (heure: number): Promise<Creneau> =>
       heure,
     },
   });
-
